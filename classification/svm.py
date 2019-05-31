@@ -1,5 +1,7 @@
 import numpy as np 
 from matplotlib import pyplot as plt 
+from sklearn.metrics import accuracy_score
+from global_var import *
 import random
 
 def linear_kernel(xi, xj):
@@ -20,7 +22,7 @@ def rbf_kernel(A, B, epsilon=0.01):
 
 class SVM:
 
-	def __init__(self, x, y, kernel = linear_kernel):
+	def __init__(self, x, y,  kernel = linear_kernel):
 		self.x = x #[n, p]
 		self.y = y #[n, ]
 		self.a = np.zeros((self.x.shape[0], ), dtype=np.float32)
@@ -30,6 +32,8 @@ class SVM:
 
 	def predict(self, x):
 		# x [n2, p]
+		if len(self.sv_idx) == 0:
+			return np.zeros((x.shape[0], ), dtype=np.float32)
 		if len(x.shape) == 1: # if single vector input
 			x = x.reshape((1, x.shape[0]))
 		# get support vector
@@ -41,7 +45,7 @@ class SVM:
 		return pred # [n2, ]
 
 	def getE(self, i):
-		ui = self.predict(self.x[i])
+		ui = self.predict(self.x[i])[0]
 		return ui - self.y[i]
 	
 	def findMax(self, Ei):
@@ -72,7 +76,7 @@ class SVM:
 					# yi*f(i) == 1 and 0<alpha < C (在边界上的支持向量)
 					# yi*f(i) <= 1 and alpha == C (在边界之间) 
 					j = i
-					if not self.sv_idx:
+					if len(self.sv_idx) > 0:
 						# find j to max|Ei - Ej|
 						j = self.findMax(Ei)
 					else:
@@ -106,8 +110,8 @@ class SVM:
 						# 带入目标函数中，相应的aj = L还是H就可以知道了
 						# 参考https://www.cnblogs.com/jerrylead/archive/2011/03/18/1988419.html
 						s = self.y[i] * self.y[j]
-						f1 = self.y[i](Ei + self.b) - self.a[i] * Kii - s * self.a[j] * Kij
-						f2 = self.y[j](Ej + self.b) - s * self.a[i] * Kij - self.a[j] * Kjj
+						f1 = self.y[i] * (Ei + self.b) - self.a[i] * Kii - s * self.a[j] * Kij
+						f2 = self.y[j] * (Ej + self.b) - s * self.a[i] * Kij - self.a[j] * Kjj
 						L1 = self.a[i] + s*(self.a[j] - L)
 						H1 = self.a[i] + s*(self.a[j] - H)
 						psiL = L1*f1 + L*f2 + 0.5*L1*L1*Kii + 0.5*L*L*Kjj + s*L*L1*Kij
@@ -129,7 +133,7 @@ class SVM:
 					self.a[j] = min(H, self.a[j])
 
 					# 如果几乎没有更新, 那么就认为达到了收敛状态
-					if(abs(self.a[j] - aj_old) < 1e-5)
+					if abs(self.a[j] - aj_old) < 1e-5:
 						continue 
 
 					# 更新ai
@@ -151,6 +155,22 @@ class SVM:
 
 			if not flag:
 				count -= 1
-					
+	
+
+if __name__ == '__main__':
+	train_data = np.load(HOG_TRAIN)
+	x, y = train_data['feature'], train_data['label']
+	svm = SVM(x, y)
+	svm.train()
+	print("finishing training")
+	test_data = np.load(HOG_TEST)
+	xt, yt = test_data['feature'], test_data['label']
+	y_pred = svm.predict(xt) > 0
+	y_true = yt > 0
+	acc = accuracy_score(y_true, y_pred)
+	print("finishing testing, acc=%.4f" %(acc))
+
+	
+
 
 

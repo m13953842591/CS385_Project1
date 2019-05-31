@@ -2,8 +2,15 @@
 <project version="4">
   <component name="ChangeListManager">
     <list default="true" id="39b0b067-1485-4186-a39c-9c268a4ba0bd" name="Default Changelist" comment="">
-      <change afterPath="$PROJECT_DIR$/.idea/vcs.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/classification/.vscode/.ropeproject/objectdb" beforeDir="false" afterPath="$PROJECT_DIR$/classification/.vscode/.ropeproject/objectdb" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/classification/example.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/classification/global_var.py" beforeDir="false" afterPath="$PROJECT_DIR$/classification/global_var.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/classification/padded_image.jpg" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/classification/preprocess.py" beforeDir="false" afterPath="$PROJECT_DIR$/classification/preprocess.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/classification/sample_ellipse.txt" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/classification/svm.py" beforeDir="false" afterPath="$PROJECT_DIR$/classification/svm.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/classification/test.py" beforeDir="false" afterPath="$PROJECT_DIR$/classification/test.py" afterDir="false" />
     </list>
     <option name="EXCLUDED_CONVERTED_TO_IGNORED" value="true" />
     <option name="SHOW_DIALOG" value="false" />
@@ -14,13 +21,19 @@
   <component name="FileEditorManager">
     <leaf>
       <file pinned="false" current-in-tab="true">
-        <entry file="file://$PROJECT_DIR$/classification/linear_svm..py">
+        <entry file="file://$PROJECT_DIR$/classification/hog.py">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="163">
-              <caret line="54" column="16" selection-start-line="54" selection-start-column="16" selection-end-line="54" selection-end-column="16" />
-              <folding>
-                <element signature="e#0#18#0" expanded="true" />
-              </folding>
+            <state relative-caret-position="-7">
+              <caret line="3" column="24" lean-forward="true" selection-start-line="3" selection-start-column="24" selection-end-line="3" selection-end-column="24" />
+            </state>
+          </provider>
+        </entry>
+      </file>
+      <file pinned="false" current-in-tab="false">
+        <entry file="file://$PROJECT_DIR$/classification/global_var.py">
+          <provider selected="true" editor-type-id="text-editor">
+            <state relative-caret-position="42">
+              <caret line="2" selection-start-line="2" selection-end-line="2" />
             </state>
           </provider>
         </entry>
@@ -34,6 +47,8 @@
     <option name="CHANGED_PATHS">
       <list>
         <option value="$PROJECT_DIR$/classification/linear_svm..py" />
+        <option value="$PROJECT_DIR$/classification/hog.py" />
+        <option value="$PROJECT_DIR$/classification/global_var.py" />
       </list>
     </option>
   </component>
@@ -102,16 +117,15 @@
       <workItem from="1557716485402" duration="610000" />
       <workItem from="1558490403187" duration="370000" />
       <workItem from="1558748029388" duration="133000" />
-      <workItem from="1559100676092" duration="2935000" />
+      <workItem from="1559100676092" duration="3638000" />
     </task>
     <servers />
   </component>
   <component name="TimeTrackingManager">
-    <option name="totallyTimeSpent" value="4048000" />
+    <option name="totallyTimeSpent" value="4751000" />
   </component>
   <component name="ToolWindowManager">
     <frame x="56" y="-7" width="1231" height="735" extended-state="6" />
-    <editor active="true" />
     <layout>
       <window_info active="true" content_ui="combo" id="Project" order="0" visible="true" weight="0.17561807" />
       <window_info id="Structure" order="1" side_tool="true" weight="0.25" />
@@ -154,6 +168,20 @@
           <folding>
             <element signature="e#0#18#0" expanded="true" />
           </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/classification/global_var.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="42">
+          <caret line="2" selection-start-line="2" selection-end-line="2" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/classification/hog.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="-7">
+          <caret line="3" column="24" lean-forward="true" selection-start-line="3" selection-start-column="24" selection-end-line="3" selection-end-column="24" />
         </state>
       </provider>
     </entry>
