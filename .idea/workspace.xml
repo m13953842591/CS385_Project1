@@ -1,17 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <project version="4">
   <component name="ChangeListManager">
-    <list default="true" id="39b0b067-1485-4186-a39c-9c268a4ba0bd" name="Default Changelist" comment="">
-      <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/classification/.vscode/.ropeproject/objectdb" beforeDir="false" afterPath="$PROJECT_DIR$/classification/.vscode/.ropeproject/objectdb" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/classification/example.java" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/classification/global_var.py" beforeDir="false" afterPath="$PROJECT_DIR$/classification/global_var.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/classification/padded_image.jpg" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/classification/preprocess.py" beforeDir="false" afterPath="$PROJECT_DIR$/classification/preprocess.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/classification/sample_ellipse.txt" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/classification/svm.py" beforeDir="false" afterPath="$PROJECT_DIR$/classification/svm.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/classification/test.py" beforeDir="false" afterPath="$PROJECT_DIR$/classification/test.py" afterDir="false" />
-    </list>
+    <list default="true" id="39b0b067-1485-4186-a39c-9c268a4ba0bd" name="Default Changelist" comment="" />
     <option name="EXCLUDED_CONVERTED_TO_IGNORED" value="true" />
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -19,12 +9,12 @@
     <option name="LAST_RESOLUTION" value="IGNORE" />
   </component>
   <component name="FileEditorManager">
-    <leaf>
+    <leaf SIDE_TABS_SIZE_LIMIT_KEY="300">
       <file pinned="false" current-in-tab="true">
         <entry file="file://$PROJECT_DIR$/classification/hog.py">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="-7">
-              <caret line="3" column="24" lean-forward="true" selection-start-line="3" selection-start-column="24" selection-end-line="3" selection-end-column="24" />
+            <state relative-caret-position="21">
+              <caret line="3" column="24" selection-start-line="3" selection-start-column="24" selection-end-line="3" selection-end-column="24" />
             </state>
           </provider>
         </entry>
@@ -62,6 +52,7 @@
       <foldersAlwaysOnTop value="true" />
     </navigator>
     <panes>
+      <pane id="Scope" />
       <pane id="ProjectPane">
         <subPane>
           <expand>
@@ -78,13 +69,12 @@
           <select />
         </subPane>
       </pane>
-      <pane id="Scope" />
     </panes>
   </component>
   <component name="PropertiesComponent">
     <property name="SHARE_PROJECT_CONFIGURATION_FILES" value="true" />
     <property name="WebServerToolWindowFactoryState" value="false" />
-    <property name="last_opened_file_path" value="$PROJECT_DIR$" />
+    <property name="last_opened_file_path" value="$USER_HOME$/Documents/Graffiti_dataset" />
     <property name="node.js.detected.package.eslint" value="true" />
     <property name="node.js.path.for.package.eslint" value="project" />
     <property name="node.js.selected.package.eslint" value="(autodetect)" />
@@ -118,16 +108,17 @@
       <workItem from="1558490403187" duration="370000" />
       <workItem from="1558748029388" duration="133000" />
       <workItem from="1559100676092" duration="3638000" />
+      <workItem from="1559488643245" duration="58000" />
     </task>
     <servers />
   </component>
   <component name="TimeTrackingManager">
-    <option name="totallyTimeSpent" value="4751000" />
+    <option name="totallyTimeSpent" value="4809000" />
   </component>
   <component name="ToolWindowManager">
-    <frame x="56" y="-7" width="1231" height="735" extended-state="6" />
+    <frame x="63" y="-7" width="1225" height="735" extended-state="6" />
     <layout>
-      <window_info active="true" content_ui="combo" id="Project" order="0" visible="true" weight="0.17561807" />
+      <window_info active="true" content_ui="combo" id="Project" order="0" visible="true" weight="0.17823479" />
       <window_info id="Structure" order="1" side_tool="true" weight="0.25" />
       <window_info id="Favorites" order="2" side_tool="true" />
       <window_info anchor="bottom" id="Message" order="0" />
@@ -161,13 +152,11 @@
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/classification/linear_svm..py">
+    <entry file="file://$PROJECT_DIR$/classification/linear_svm..py" />
+    <entry file="file://$PROJECT_DIR$/classification/hog.py">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="163">
-          <caret line="54" column="16" selection-start-line="54" selection-start-column="16" selection-end-line="54" selection-end-column="16" />
-          <folding>
-            <element signature="e#0#18#0" expanded="true" />
-          </folding>
+        <state relative-caret-position="21">
+          <caret line="3" column="24" selection-start-line="3" selection-start-column="24" selection-end-line="3" selection-end-column="24" />
         </state>
       </provider>
     </entry>
@@ -175,13 +164,6 @@
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="42">
           <caret line="2" selection-start-line="2" selection-end-line="2" />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/classification/hog.py">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="-7">
-          <caret line="3" column="24" lean-forward="true" selection-start-line="3" selection-start-column="24" selection-end-line="3" selection-end-column="24" />
         </state>
       </provider>
     </entry>
