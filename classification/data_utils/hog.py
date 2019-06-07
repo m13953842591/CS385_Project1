@@ -73,7 +73,4 @@ if __name__ == "__main__":
     cv2.imshow("img", img)
     print("img.shape = ", img.shape)
     hog_feature = hog(img)
-    # print(hog_feature.shape)
-    # print(hog_feature)
-    # print(np.sum(hog_feature))
     visualize(img)

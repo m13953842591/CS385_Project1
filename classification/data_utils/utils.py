@@ -3,7 +3,7 @@ import os
 from matplotlib import pyplot as plt
 import numpy as np 
 from config import *
-from hog import hog
+
 
 def generate(img, x, y, major_r, minor_r, positive=True):
     '''

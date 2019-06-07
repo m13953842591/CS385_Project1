@@ -160,7 +160,7 @@ class SVM:
 	
 
 if __name__ == '__main__':
-	train_data = np.load(os.path.join(DATA_PATH, "hog/train.npz"))
+	train_data = np.load(os.path.join(DATA_PATH, "hog/train_cnn.npz"))
 	x, y = train_data['feature'], train_data['label']
 	svm = SVM(x, y)
 	svm.train()
