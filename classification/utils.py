@@ -2,7 +2,7 @@ import cv2
 import os
 from matplotlib import pyplot as plt
 import numpy as np 
-from global_var import *
+from config import *
 from hog import hog
 
 def generate(img, x, y, major_r, minor_r, positive=True):
@@ -78,6 +78,7 @@ def generate(img, x, y, major_r, minor_r, positive=True):
                 k += 1
         return neg_img
 
+
 def show_img(img, positive=True):
     if positive:
         cv2.imshow("pos_img", img)
@@ -91,19 +92,20 @@ def show_img(img, positive=True):
             plt.imshow(subimg)
         plt.show()
 
+
 def test(count=50, isPositive=True):
     # if isPositive == True, test positive example
     # else test negative example
     # "count" represent number of pictures we test
 
-    ellipseListpath = os.path.join(FDDB_FOLD, "FDDB-fold-01-ellipseList.txt")
+    ellipseListpath = os.path.join(DATA_PATH + '/FDDB-folds', "FDDB-fold-01-ellipseList.txt")
     with open(ellipseListpath, 'r') as f:
         while count > 0:
             line = f.readline()
             if not line:
                 break
             line = line[:-1] + ".jpg"
-            img_path = os.path.join(RAW_DATA_PATH, line)
+            img_path = os.path.join(DATA_PATH + '/originalPics', line)
             img = cv2.imread(img_path)
             num_face = int(f.readline()[:-1])
             for i in range(num_face):
@@ -113,89 +115,60 @@ def test(count=50, isPositive=True):
                 show_img(face_img, positive=isPositive)
             count -= 1
 
-def get_data_set(train=True, isPositive=True):
-    save_path = ""
-    file_range = []
-    if train:
-        if isPositive:
-            save_path = HOG_TRAIN_POSITIVE
-            file_range = range(1, 9)
-        else:
-            save_path = HOG_TRAIN_NEGATIVE
-            file_range = range(1, 5)
-    else:
-        if isPositive:
-            save_path = HOG_TEST_POSITIVE
-            file_range = [9, 10]
-        else:
-            save_path = HOG_TEST_NEGATIVE
-            file_range = [10]
 
-    features = np.zeros((1, 900), dtype=np.float32)
+def get_image_dataset(file_range, out_dir, is_positive):
+    fddb_path = os.path.join(DATA_PATH, 'FDDB-folds')
+    image_path = os.path.join(DATA_PATH, 'originalPics')
 
     for i in file_range:
-        filename = os.path.join(FDDB_FOLD, "FDDB-fold-%02d-ellipseList.txt" %(i))
+        filename = os.path.join(fddb_path, "FDDB-fold-%02d-ellipseList.txt" % i)
+        print("reading FDDB-fold-%02d-ellipseList.txt ..." % i)
         with open(filename, 'r') as f:
-            line = ""
             while True:
                 line = f.readline()
                 if not line:
                     break
+                img_name = "_".join(line[:-1].split('/'))
                 line = line[:-1] + ".jpg"
-                img = cv2.imread(os.path.join(RAW_DATA_PATH, line))
+                img = cv2.imread(os.path.join(image_path, line))
                 num_face = int(f.readline()[:-1])  
                 for i in range(num_face):
-                    annot = f.readline().split(" ")
-                    face_img = generate(img, float(annot[3]), float(annot[4]), \
-                        float(annot[0]), float(annot[1]), positive=isPositive)
-                    if isPositive:
-                        feature = hog(face_img)
-                        if np.isnan(feature).any():
-                            continue
-                        features = np.row_stack((features, feature))
+                    annot = f.readline().split(' ')
+                    face_img = generate(img, float(annot[3]), float(annot[4]),
+                                        float(annot[0]), float(annot[1]),
+                                        positive=is_positive)
+                    if is_positive:
+                        cv2.imwrite(os.path.join(out_dir, img_name + ".00.jpg"), face_img)
                     else:
                         for j in range(9):
-                            feature = hog(face_img[j])
-                            if np.isnan(feature).any():
-                                continue
-                            features = np.row_stack((features, feature))
+                            cv2.imwrite(os.path.join(out_dir, img_name + ".%02d.jpg" % (j+1)),
+                                        face_img[j])
 
-    label = 1 if isPositive else -1
-    labels = label * np.ones((features.shape[0]-1, 1), dtype=np.float32)
+# def get_hog_dataset():
+#     tp = np.load(HOG_TRAIN_POSITIVE)
+#     tpf, tpl = tp['feature'], tp['label']
+#     tn = np.load(HOG_TRAIN_NEGATIVE)
+#     tnf, tnl = tn['feature'], tn['label']
+#     tp_n = np.concatenate((tpf, tpl), axis=1)
+#     tn_n = np.concatenate((tnf, tnl), axis=1)
+#     t_n = np.concatenate((tp_n, tn_n), axis=0)
+#     np.random.shuffle(t_n)
+#     np.savez(HOG_TRAIN, feature=t_n[:, :-1], label=t_n[:, -1])
+#     tp = np.load(HOG_TEST_POSITIVE)
+#     tpf, tpl = tp['feature'], tp['label']
+#     tn = np.load(HOG_TEST_NEGATIVE)
+#     tnf, tnl = tn['feature'], tn['label']
+#     debug1 = tpf[: 50]
+#     debug2 = tnf[: 50]
+#     tp_n = np.concatenate((tpf, tpl), axis=1)
+#     tn_n = np.concatenate((tnf, tnl), axis=1)
+#     t_n = np.concatenate((tp_n, tn_n), axis=0)
+#     np.random.shuffle(t_n)
+#     y = t_n[:, -1]
+#     np.savez(HOG_TEST, feature=t_n[:, :-1], label=t_n[:, -1])
 
-    np.savez(save_path, feature=features[1:], label=labels)
 
-def process_data_set():
-    tp = np.load(HOG_TRAIN_POSITIVE)
-    tpf, tpl = tp['feature'], tp['label']
-    tn = np.load(HOG_TRAIN_NEGATIVE)
-    tnf, tnl = tn['feature'], tn['label']
-    tp_n = np.concatenate((tpf, tpl), axis=1)
-    tn_n = np.concatenate((tnf, tnl), axis=1)
-    t_n = np.concatenate((tp_n, tn_n), axis=0)
-    np.random.shuffle(t_n)
-    np.savez(HOG_TRAIN, feature=t_n[:, :-1], label=t_n[:, -1])
-    tp = np.load(HOG_TEST_POSITIVE)
-    tpf, tpl = tp['feature'], tp['label']
-    tn = np.load(HOG_TEST_NEGATIVE)
-    tnf, tnl = tn['feature'], tn['label']
-    debug1 = tpf[: 50]
-    debug2 = tnf[: 50]
-    tp_n = np.concatenate((tpf, tpl), axis=1)
-    tn_n = np.concatenate((tnf, tnl), axis=1)
-    t_n = np.concatenate((tp_n, tn_n), axis=0)
-    np.random.shuffle(t_n)
-    y = t_n[:, -1]
-    np.savez(HOG_TEST, feature=t_n[:, :-1], label=t_n[:, -1])
-    
 if __name__ == '__main__':
-    get_data_set(True, True)
-    get_data_set(True, False)
-    get_data_set(False, True)
-    get_data_set(False, False)
-    process_data_set()
-    
-
-
-                
-    
+    get_image_dataset([10],
+                      out_dir=DATA_PATH + "/classification/test",
+                      is_positive=False)

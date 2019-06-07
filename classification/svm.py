@@ -1,8 +1,10 @@
 import numpy as np 
 from matplotlib import pyplot as plt 
 from sklearn.metrics import accuracy_score
-from global_var import *
+from config import *
 import random
+import os
+
 
 def linear_kernel(xi, xj):
 	# x1: [n1, p] x2: [n2, p]
@@ -158,12 +160,12 @@ class SVM:
 	
 
 if __name__ == '__main__':
-	train_data = np.load(HOG_TRAIN)
+	train_data = np.load(os.path.join(DATA_PATH, "hog/train.npz"))
 	x, y = train_data['feature'], train_data['label']
 	svm = SVM(x, y)
 	svm.train()
 	print("finishing training")
-	test_data = np.load(HOG_TEST)
+	test_data = np.load(os.path.join(DATA_PATH, "hog/test.npz"))
 	xt, yt = test_data['feature'], test_data['label']
 	y_pred = svm.predict(xt) > 0
 	y_true = yt > 0

@@ -1,7 +1,7 @@
 import cv2
 import os
 import numpy as np
-from global_var import *
+from config import *
 from sklearn.preprocessing import normalize
 bin_size = 9
 
@@ -68,7 +68,7 @@ def visualize(img, cs=16):
 
 if __name__ == "__main__":
     path = "2002/08/11/big/img_591.jpg"
-    path = os.path.join(RAW_DATA_PATH, path)
+    path = os.path.join(DATA_PATH + '/originalPics', path)
     img = cv2.imread(path)
     cv2.imshow("img", img)
     print("img.shape = ", img.shape)

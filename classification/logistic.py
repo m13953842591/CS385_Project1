@@ -1,7 +1,7 @@
 import numpy as np 
 import matplotlib as plt 
 from sklearn.metrics import accuracy_score
-from global_var import * 
+from config import *
 
 
 class LogisticModel:
