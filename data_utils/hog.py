@@ -2,8 +2,11 @@ import cv2
 import os
 import numpy as np
 from config import *
-from sklearn.preprocessing import normalize
+from skimage import feature as ft
 bin_size = 9
+EPS = 1e-12
+
+
 
 def get_hog_cells(img, cs=16):
     """
@@ -26,9 +29,9 @@ def get_hog_cells(img, cs=16):
             b = bins[i*cs:(i+1)*cs, j*cs:(j+1)*cs]
             m = mag[i*cs:(i+1)*cs, j*cs:(j+1)*cs]
             hog_cells[i][j] = np.bincount(b.ravel(), m.ravel(), bin_size)
-            hog_cells[i][j] = hog_cells[i][j] / hog_cells[i][j].max()
-
+            hog_cells[i][j] = hog_cells[i][j] / 1000
     return hog_cells
+
 
 def hog(img):
     """
@@ -42,6 +45,18 @@ def hog(img):
             hists[i*5+j] = np.hstack([hog_cells[i][j], hog_cells[i+1][j], hog_cells[i][j+1], hog_cells[i+1][j+1]])
 
     return np.hstack(hists)
+
+
+def hog_skimage(img):
+    return ft.hog(img,  # input image
+                  orientations=9,  # number of bins
+                  pixels_per_cell=(16, 16), # pixel per cell
+                  cells_per_block=(2, 2), # cells per blcok
+                  block_norm='L1', #  block norm : str {‘L1’, ‘L1-sqrt’, ‘L2’, ‘L2-Hys’}, optional
+                  transform_sqrt=True, # power law compression (also known as gamma correction)
+                  feature_vector=True, # flatten the final vectors
+                  visualize=False)
+
 
 def visualize(img, cs=16):
     """
@@ -66,11 +81,15 @@ def visualize(img, cs=16):
     print("out_img.shape = ", out_img.shape)
     cv2.waitKey(0)
 
+
 if __name__ == "__main__":
-    path = "2002/08/11/big/img_591.jpg"
-    path = os.path.join(DATA_PATH + '/originalPics', path)
-    img = cv2.imread(path)
-    cv2.imshow("img", img)
+    path = "test.jpg"
+    # path = os.path.join(DATA_PATH + '/originalPics', path)
+    img = cv2.imread(path, cv2.IMREAD_COLOR)
+    img_gray = cv2.imread(path, cv2.IMREAD_GRAYSCALE)
+    # cv2.imshow("img", img)
     print("img.shape = ", img.shape)
-    hog_feature = hog(img)
-    visualize(img)
+    hog_feature = hog_skimage(img)
+    hog_feature_gray = hog_skimage(img_gray)
+    print("hog_feature.shape = ", hog_feature.shape)
+    # visualize(img)

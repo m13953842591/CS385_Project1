@@ -1,10 +1,10 @@
-import numpy as np 
-from matplotlib import pyplot as plt 
-from sklearn.metrics import accuracy_score
+import numpy as np
 from config import *
 import random
 import os
-
+'''
+off-the-shelf code for binary classification svm
+'''
 
 def linear_kernel(xi, xj):
 	# x1: [n1, p] x2: [n2, p]
@@ -36,15 +36,15 @@ class SVM:
 		# x [n2, p]
 		if len(self.sv_idx) == 0:
 			return np.zeros((x.shape[0], ), dtype=np.float32)
-		if len(x.shape) == 1: # if single vector input
+		if len(x.shape) == 1:	# if single vector input
 			x = x.reshape((1, x.shape[0]))
 		# get support vector
-		n1 = self.sv_idx.shape[0]
+		n1 = len(self.sv_idx)
 		sv_a = self.a[self.sv_idx].reshape((1, n1)) # [1, n1]
 		sv_y = self.y[self.sv_idx].reshape((1, n1)) # [1, n1]
 		sv_x = self.x[self.sv_idx] # [n1, p]
 		pred = np.sum((sv_a * sv_y) * self.K(x, sv_x), axis=1) + self.b
-		return pred # [n2, ]
+		return pred		# [n2, ]
 
 	def getE(self, i):
 		ui = self.predict(self.x[i])[0]
@@ -55,10 +55,10 @@ class SVM:
 		sv_y = self.y[self.sv_idx] # [n1, ]
 		u = self.predict(sv_x) # [n1, ]
 		E = u - sv_y # [n1, ]
-		idx = np.argmax(np.abs(E - Ei))
+		idx = np.argmax(np.abs(E - Ei))[0]
 		return self.sv_idx[idx]
 		
-	def train(self, C=1, tol=0.01):
+	def train(self, C=1, tol=0.001):
 		"""
 		利用SMO算法训练SVM
 		:param C: 松弛变量惩戒因子
@@ -71,8 +71,8 @@ class SVM:
 			for i in range(n):
 				Ei = self.getE(i)
 				if (self.y[i] * Ei < -tol and self.a[i] < C) \
-				or (self.y[i] * Ei > tol and self.a[i] > 0) \
-				or (self.y[i] * Ei == 0 and (self.a[i] == 0 or self.a[i] == C)):
+					or (self.y[i] * Ei > tol and self.a[i] > 0) \
+					or (self.y[i] * Ei == 0 and (self.a[i] == 0 or self.a[i] == C)):
 					# 满足KKT条件的情况是：
 					# yi*f(i) >= 1 and alpha == 0 (正确分类)
 					# yi*f(i) == 1 and 0<alpha < C (在边界上的支持向量)
@@ -83,14 +83,13 @@ class SVM:
 						j = self.findMax(Ei)
 					else:
 						while j == i:
-							j = random.choice(list(range(n)))
+							j = random.randint(0, n-1)
 
 					Ej = self.getE(j)
 					ai_old, aj_old = self.a[i], self.a[j]
 
 					# 求a2_new的取值范围
-					L, H = 0, C
-					if(self.y[i] != self.y[j]):
+					if self.y[i] != self.y[j]:
 						L = max(0, aj_old - ai_old)
 						H = min(C, C + aj_old - ai_old)
 					else:
@@ -102,8 +101,7 @@ class SVM:
 					Kii = self.K(self.x[i], self.x[i])
 					Kjj = self.K(self.x[j], self.x[j])
 
-					
-					eta =  Kii + Kjj - 2 * Kij
+					eta = Kii + Kjj - 2 * Kij
 					
 					if eta <= 0:
 						# 如果eta等于0或者小于0 说明目标函数是非正定的
@@ -145,14 +143,14 @@ class SVM:
 					if (self.a[i] > 0) and (self.a[i] < C) and (i not in self.sv_idx):
 						self.sv_idx.append(i)
 
-					b1 = b - Ei - self.y[i] * (self.a[i] - ai_old) * Kii - self.y[j] * (self.a[j] - aj_old) * Kij
-					b2 = b - Ej - self.y[i] * (self.a[i] - ai_old) * Kij - self.y[j] * (self.a[j] - aj_old) * Kjj
+					b1 = self.b - Ei - self.y[i] * (self.a[i] - ai_old) * Kii - self.y[j] * (self.a[j] - aj_old) * Kij
+					b2 = self.b - Ej - self.y[i] * (self.a[i] - ai_old) * Kij - self.y[j] * (self.a[j] - aj_old) * Kjj
 					if 0 < self.a[i] and self.a[i] < C:
-						b = b1
+						self.b = b1
 					elif 0 < self.a[j] and self.a[j] < C:
-						b = b2
+						self.b = b2
 					else:
-						b = (b1 + b2) / 2
+						self.b = (b1 + b2) / 2
 					flag = True
 
 			if not flag:
@@ -160,16 +158,16 @@ class SVM:
 	
 
 if __name__ == '__main__':
-	train_data = np.load(os.path.join(DATA_PATH, "hog/train_cnn.npz"))
+	train_data = np.load(os.path.join(DATA_PATH, "hog\\train.npz"))
 	x, y = train_data['feature'], train_data['label']
 	svm = SVM(x, y)
 	svm.train()
 	print("finishing training")
-	test_data = np.load(os.path.join(DATA_PATH, "hog/test.npz"))
+	test_data = np.load(os.path.join(DATA_PATH, "hog\\test.npz"))
 	xt, yt = test_data['feature'], test_data['label']
 	y_pred = svm.predict(xt) > 0
 	y_true = yt > 0
-	acc = accuracy_score(y_true, y_pred)
+	acc = np.sum(y_true == y_pred) / y_true.shape[0]
 	print("finishing testing, acc=%.4f" %(acc))
 
 	

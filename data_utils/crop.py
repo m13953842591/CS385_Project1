@@ -5,7 +5,7 @@ import numpy as np
 from config import *
 
 
-def generate(img, x, y, major_r, minor_r, positive=True):
+def crop(img, x, y, major_r, minor_r, positive=True):
     '''
     Generate the positive or negative feature image according to the annotation
     param img: the input image in numpy form
@@ -17,7 +17,7 @@ def generate(img, x, y, major_r, minor_r, positive=True):
     param minor_r: minor axis radius
     and angle, which is not necessity in this method
 
-    param positive: generative positive images if set to True, else generate 
+    param positive: generative positive images if set to True, else crop
     negative images[96, 96, 3]
 
     return: if positive=True, return the positive image
@@ -110,65 +110,11 @@ def test(count=50, isPositive=True):
             num_face = int(f.readline()[:-1])
             for i in range(num_face):
                 annot = f.readline().split(" ")
-                face_img = generate(img, float(annot[3]), float(annot[4]), \
-                    float(annot[0]), float(annot[1]), positive=isPositive)
+                face_img = crop(img, float(annot[3]), float(annot[4]), \
+                                float(annot[0]), float(annot[1]), positive=isPositive)
                 show_img(face_img, positive=isPositive)
             count -= 1
 
 
-def get_image_dataset(file_range, out_dir, is_positive):
-    fddb_path = os.path.join(DATA_PATH, 'FDDB-folds')
-    image_path = os.path.join(DATA_PATH, 'originalPics')
-
-    for i in file_range:
-        filename = os.path.join(fddb_path, "FDDB-fold-%02d-ellipseList.txt" % i)
-        print("reading FDDB-fold-%02d-ellipseList.txt ..." % i)
-        with open(filename, 'r') as f:
-            while True:
-                line = f.readline()
-                if not line:
-                    break
-                img_name = "_".join(line[:-1].split('/'))
-                line = line[:-1] + ".jpg"
-                img = cv2.imread(os.path.join(image_path, line))
-                num_face = int(f.readline()[:-1])  
-                for i in range(num_face):
-                    annot = f.readline().split(' ')
-                    face_img = generate(img, float(annot[3]), float(annot[4]),
-                                        float(annot[0]), float(annot[1]),
-                                        positive=is_positive)
-                    if is_positive:
-                        cv2.imwrite(os.path.join(out_dir, img_name + ".00.jpg"), face_img)
-                    else:
-                        for j in range(9):
-                            cv2.imwrite(os.path.join(out_dir, img_name + ".%02d.jpg" % (j+1)),
-                                        face_img[j])
-
-# def get_hog_dataset():
-#     tp = np.load(HOG_TRAIN_POSITIVE)
-#     tpf, tpl = tp['feature'], tp['label']
-#     tn = np.load(HOG_TRAIN_NEGATIVE)
-#     tnf, tnl = tn['feature'], tn['label']
-#     tp_n = np.concatenate((tpf, tpl), axis=1)
-#     tn_n = np.concatenate((tnf, tnl), axis=1)
-#     t_n = np.concatenate((tp_n, tn_n), axis=0)
-#     np.random.shuffle(t_n)
-#     np.savez(HOG_TRAIN, feature=t_n[:, :-1], label=t_n[:, -1])
-#     tp = np.load(HOG_TEST_POSITIVE)
-#     tpf, tpl = tp['feature'], tp['label']
-#     tn = np.load(HOG_TEST_NEGATIVE)
-#     tnf, tnl = tn['feature'], tn['label']
-#     debug1 = tpf[: 50]
-#     debug2 = tnf[: 50]
-#     tp_n = np.concatenate((tpf, tpl), axis=1)
-#     tn_n = np.concatenate((tnf, tnl), axis=1)
-#     t_n = np.concatenate((tp_n, tn_n), axis=0)
-#     np.random.shuffle(t_n)
-#     y = t_n[:, -1]
-#     np.savez(HOG_TEST, feature=t_n[:, :-1], label=t_n[:, -1])
-
-
 if __name__ == '__main__':
-    get_image_dataset([10],
-                      out_dir=DATA_PATH + "/classification/test",
-                      is_positive=False)
+    test()
