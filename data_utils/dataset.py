@@ -49,7 +49,8 @@ def get_image_dataset():
                         face_img_pos)
 
                     if i < 5 or i == 10:
-                        face_img_neg = crop(img, float(annot[3]),
+                        face_img_neg = crop(img,
+                                            float(annot[3]),
                                             float(annot[4]),
                                             float(annot[0]),
                                             float(annot[1]),
@@ -57,8 +58,7 @@ def get_image_dataset():
                         out_dir = out_dir_train if i < 5 else out_dir_test
                         for j in range(9):
                             cv2.imwrite(os.path.join(out_dir,
-                                                     img_name + ".%02d.jpg" % (
-                                                                 j + 1)),
+                                                     img_name + ".%02d.jpg" % (j + 1)),
                                         face_img_neg[j])
 
 
@@ -151,3 +151,48 @@ def get_hog_dataset():
 
 if __name__ == '__main__':
     get_hog_dataset()
+#     fddb_path = os.path.join(DATA_PATH, 'FDDB-folds')
+#     image_path = os.path.join(DATA_PATH, 'originalPics')
+#     filename = os.path.join(fddb_path, "FDDB-fold-10-ellipseList.txt")
+#     out_dir = os.path.join(DATA_PATH, "image_small")
+#     if not os.path.exists(out_dir):
+#         os.mkdir(out_dir)
+#
+#     with open(filename, 'r') as f:
+#         while True:
+#             line = f.readline()
+#             if not line:
+#                 break
+#             img_name = "_".join(line[:-1].split('/'))
+#             line = line[:-1] + ".jpg"
+#             img = cv2.imread(os.path.join(image_path, line))
+#             num_face = int(f.readline()[:-1])
+#             if img is None:
+#                 print("error, image: %s not found" % os.path.join(
+#                         image_path, line))
+#                 for _ in range(num_face):
+#                     f.readline()
+#                 continue
+#
+#             # image exist
+#             for _ in range(num_face):
+#                 annot = f.readline().split(' ')
+#                 face_img_pos = crop(img, float(annot[3]), float(annot[4]),
+#                                 float(annot[0]), float(annot[1]),
+#                                 positive=True)
+#
+#                 cv2.imwrite(
+#                     os.path.join(out_dir, img_name + ".00.jpg"),
+#                     face_img_pos)
+#
+#                 face_img_neg = crop(img, float(annot[3]),
+#                                     float(annot[4]),
+#                                     float(annot[0]),
+#                                     float(annot[1]),
+#                                     positive=False)
+#
+#                 for j in range(9):
+#                     cv2.imwrite(os.path.join(out_dir,
+#                                              img_name + ".%02d.jpg" % (
+#                                                          j + 1)),
+#                                 face_img_neg[j])

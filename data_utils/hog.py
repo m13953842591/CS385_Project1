@@ -29,7 +29,7 @@ def get_hog_cells(img, cs=16):
             b = bins[i*cs:(i+1)*cs, j*cs:(j+1)*cs]
             m = mag[i*cs:(i+1)*cs, j*cs:(j+1)*cs]
             hog_cells[i][j] = np.bincount(b.ravel(), m.ravel(), bin_size)
-            hog_cells[i][j] = hog_cells[i][j] / 1000
+            hog_cells[i][j] = hog_cells[i][j] / 800
     return hog_cells
 
 
@@ -83,13 +83,7 @@ def visualize(img, cs=16):
 
 
 if __name__ == "__main__":
-    path = "test.jpg"
+    path = "C:\\Users\\ChenZixuan\\Documents\\datasets\\FDDB_dataset\\originalPics\\2002\\08\\11\\big\\img_591.jpg"
     # path = os.path.join(DATA_PATH + '/originalPics', path)
     img = cv2.imread(path, cv2.IMREAD_COLOR)
-    img_gray = cv2.imread(path, cv2.IMREAD_GRAYSCALE)
-    # cv2.imshow("img", img)
-    print("img.shape = ", img.shape)
-    hog_feature = hog_skimage(img)
-    hog_feature_gray = hog_skimage(img_gray)
-    print("hog_feature.shape = ", hog_feature.shape)
-    # visualize(img)
+    visualize(img)

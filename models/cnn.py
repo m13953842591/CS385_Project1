@@ -54,6 +54,12 @@ class AlexNet(nn.Module):
         x = self.classifier(x)
         return x
 
+    def get_middle_output(self, x):
+        x = self.features(x)
+        x = self.avgpool(x)
+        x = x.view(x.size(0), 256 * 6 * 6)
+        return x.cpu()
+
 
 class CNN:
     def __init__(self):
@@ -61,28 +67,40 @@ class CNN:
         self.device = torch.device(
             "cuda:0" if torch.cuda.is_available() else "cpu")
         self.transform = ToTensor()
+        self.name = "cnn"
+
+    def get_middle_output(self, x):
+        return self.net.get_middle_output(x)
 
     def load_last_checkpoint(self, checkpoint_dir):
+
         cp_list = glob.glob(
-            os.path.join(checkpoint_dir, "cnn_epoch_[0-9]+_acc*.pth"))
-        if cp_list is None:
+            os.path.join(checkpoint_dir, r"cnn_epoch*.pth"))
+        if not cp_list:
             print("No checkpoint found, using default cnn")
             self.net = AlexNet(num_classes=2)
             return 0
         max_e = 0
         max_cp = None
         for cp in cp_list:
-            e = int(cp.split('_')[-2])
+            e = int(cp.split('_')[-3])
             if e > max_e:
                 max_e = e
                 max_cp = cp
+        print("max_cp = ", max_cp)
         self.net = torch.load(max_cp, map_location=self.device)
+        self.net.eval()
+        print("successfully retored from checkpoint %s" % max_cp)
         return max_e
 
-    def train(self, epoch=10, batch_size=64, lr=0.001, checkpoint_dir=None, auto_resume=True):
+    def train(self, epoch=10, batch_size=128, lr=0.001, checkpoint_dir=None, auto_resume=True):
         latest_epoch = 0
-        if auto_resume:
+        if auto_resume and checkpoint_dir is not None:
             latest_epoch = self.load_last_checkpoint(checkpoint_dir)
+        else:
+            self.net = AlexNet(2)
+            self.net.to(self.device)
+            print("fresh start!")
 
         print("loading training and testing data...")
         train_dataset = FaceClassificationDataset(
@@ -97,8 +115,8 @@ class CNN:
                                  batch_size=batch_size,
                                  shuffle=True,
                                  num_workers=0)
+        print("loading finished")
 
-        self.net.to(self.device)
         opt = optim.Adam(self.net.parameters(), lr=lr)
         criterion = nn.CrossEntropyLoss(reduction='mean')
 
@@ -110,7 +128,7 @@ class CNN:
         train_batch = len(train_loader)
         test_batch = len(test_loader)
 
-        for e in range(latest_epoch+1, latest_epoch + epoch + 1):
+        for e in range(epoch):
 
             training_loss, training_acc = 0.0, 0.0
             for batch_ndx, data in enumerate(train_loader):
@@ -131,7 +149,7 @@ class CNN:
                 training_acc += categorical_accuracy(outputs, labels).item()
                 if batch_ndx % 20 == 0:
                     print("epoch[%d], batch[%d], loss=%.4f, acc=%.4f" % (
-                          e, batch_ndx, loss.item(),
+                          e+latest_epoch+1, batch_ndx, loss.item(),
                           categorical_accuracy(outputs, labels).item()))
 
             testing_loss, testing_acc = 0.0, 0.0
@@ -151,14 +169,14 @@ class CNN:
 
             print('<summary> epoch = [%d], train_loss = %.3f, train_acc = %.3f,'
                   ' test_loss = %.3f, test_acc = %.3f '
-                  % (e + 1, train_losses[e], train_acces[e],
+                  % (e+latest_epoch+1, train_losses[e], train_acces[e],
                      test_losses[e], test_acces[e]))
 
             print("saving networks...")
-            save_path = os.path.join(DATA_PATH,
-                                     "cnn_epoch_{:02d}_acc_{:.4f}.pth".format(
-                                         e, test_acces))
-            torch.save(self.net, save_path)
+            save_path = os.path.join(WORKSPACE, "checkpoints",
+                                     "cnn_epoch_%02d_acc_%.4f.pth" % (
+                                         e+latest_epoch+1, test_acces[e]))
+            torch.save(self.net.state_dict(), save_path)
 
         print('Finished Training')
 
@@ -181,25 +199,46 @@ class CNN:
         plt.savefig(
             'cnn_epoch%d_to_%d.png' % (latest_epoch + 1, latest_epoch + epoch))
 
-    def predict_prob(self, x_sample):
+    def predict_proba(self, x_sample):
         # The input x_sample is a single image in shape(H, W, C)
         input = self.transform(x_sample)
         c, h, w = input.size()
         output = self.net(input.view(-1, c, h, w).to(self.device))
         output = functional.softmax(output, dim=1)
-        return output[0][1]
+        return output[0][1].item()
 
-    def predict(self, x):
+    def predict(self, x, threshold = 0.99):
         # The input x_sample is a single image in shape(H, W, C)
-        threshold = 0.9
         if len(x.shape) == 3:
             # single sample
-            pred = self.predict_prob(x) > threshold
+            pred = self.predict_proba(x) > threshold
             return pred
         else:
             preds = []
             for x_sample in x:
-                pred = self.predict_prob(x_sample) > threshold
+                pred = self.predict_proba(x_sample) > threshold
                 preds.append(pred)
             return np.array(preds)
 
+    def score(self):
+        test_dataset = FaceClassificationDataset(
+            root_dir=os.path.join(DATA_PATH, 'classification/test'))
+        test_loader = DataLoader(test_dataset,
+                                 batch_size=1000,
+                                 shuffle=True,
+                                 num_workers=0)
+        batch = next(iter(test_loader))
+        criterion = nn.CrossEntropyLoss(reduction='mean')
+        # get the inputs
+        inputs, labels = batch['image'].to(self.device), batch['label'].to(
+            self.device)
+        outputs = self.net(inputs)
+        loss = criterion(outputs, labels)
+        testing_acc = categorical_accuracy(outputs, labels).item()
+        return testing_acc
+
+
+if __name__ == '__main__':
+    cnn = CNN()
+    cnn.load_last_checkpoint(os.path.join(WORKSPACE, "checkpoints"))
+    print("acc = ", cnn.score())

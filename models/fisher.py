@@ -1,10 +1,9 @@
 import numpy as np
 from config import *
-
+from torch.nn.functional import softmax
 
 class LDA:
     def __init__(self, p):
-        self.p = p
         self.beta = np.zeros((p, 1), dtype=np.float32)
         self.threshold = 0
         self.mu_pos = 0
@@ -41,15 +40,19 @@ class LDA:
         self.mu_pos, self.var_pos = self.get_stat(np.dot(pos, self.beta))
         self.mu_neg, self.var_neg = self.get_stat(np.dot(neg, self.beta))
 
-    def predict(self, x):
+    def predict_proba(self, x):
         proj = np.dot(x, self.beta)
-        pred_pos = np.exp(-np.power((proj - self.mu_pos) / self.var_pos, 2)) / self.var_pos
-        pred_neg = np.exp(-np.power((proj - self.mu_neg) / self.var_neg, 2)) / self.var_neg
-        pred = (pred_neg < pred_pos).astype(np.float32)
-        return pred
+        pred_pos = np.exp(-np.power((proj - self.mu_pos) / self.var_pos, 2)) / np.sqrt(self.var_pos)
+        pred_neg = np.exp(-np.power((proj - self.mu_neg) / self.var_neg, 2)) / np.sqrt(self.var_neg)
+        output = pred_pos / (pred_neg + pred_pos)
+        return output
+
+    def predict(self, x):
+        pred = self.predict_proba(x) > 0.5
+        return pred * 2 - 1
 
     def score(self, x, y_true):
-        y_pred = self.predict(x)
+        y_pred = self.predict(x).reshape(y_true.shape[0])
         return np.sum(y_pred == y_true) / y_true.shape[0]
 
 

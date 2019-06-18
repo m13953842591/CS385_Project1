@@ -15,6 +15,7 @@ class LogisticModel:
         self.b = 0.0
         self.r = regularizer
         self.lr = learning_rate
+        self.name = "logistic"
 
     def forward(self, x, y):
         """
@@ -47,19 +48,17 @@ class LogisticModel:
             eps_b = np.random.normal(loc=0, scale=np.sqrt(self.lr))
             self.b += eps_b
 
-    def predict_prob(self, x):
+    def predict_proba(self, x):
         logit = np.dot(x, self.w) + self.b
         return 1 / (1 + np.exp(-logit))
 
     def predict(self, x):
-        threshold = 0.9
-        pred = self.predict_prob(x) > threshold
-        return pred
+        pred = self.predict_proba(x) > 0.5
+        return pred * 2 - 1
 
-    def score(self, x_test, y_test):
-        y_pred = (np.dot(x_test, self.w) + self.b) > 0
-        y_test = y_test > 0
-        return accuracy_score(y_test, y_pred)
+    def score(self, x, y_true):
+        y_pred = self.predict(x).reshape(y_true.shape[0], )
+        return np.sum(y_pred == y_true) / y_true.shape[0]
 
     def train(self, x, y, x_test, y_test, batch_size, epoch, langevin=False):
         n = x.shape[0]  # total training samples
@@ -71,9 +70,14 @@ class LogisticModel:
                               y[i: i + batch_size], langevin)
             if rest > 0:
                 self.backward(x[-rest:], y[-rest:], langevin)
-            loss = self.forward(x, y)
-            acc = self.score(x_test, y_test)
-            print("epoch[%d], loss=%.4f, acc=%.3f" % (e, loss, acc))
+            train_loss = self.forward(x, y)
+            train_acc = self.score(x, y)
+
+            val_loss = self.forward(x_test, y_test)
+            val_acc = self.score(x_test, y_test)
+            print("epoch[%d], train_loss=%.4f, train_acc=%.3f, "
+                  "val_loss=%.4f, val_acc=%.3f" % (e, train_loss, train_acc,
+                                                   val_loss, val_acc))
 
 
 if __name__ == '__main__':
@@ -82,7 +86,7 @@ if __name__ == '__main__':
     test_data = np.load(DATA_PATH + "\\hog\\test.npz")
     xt, yt = test_data['feature'], test_data['label']
     model = LogisticModel(900, 0.01, 0.01)
-    model.train(x, y, xt, yt, batch_size=200, epoch=5, langevin=True)
+    model.train(x, y, xt, yt, batch_size=1000, epoch=10, langevin=True)
 
 
 

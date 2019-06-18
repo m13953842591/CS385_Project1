@@ -91,6 +91,7 @@ def show_img(img, positive=True):
             subimg = cv2.cvtColor(img[i], cv2.COLOR_BGR2RGB)
             plt.imshow(subimg)
         plt.show()
+        cv2.waitKey(0)
 
 
 def test(count=50, isPositive=True):
@@ -110,11 +111,11 @@ def test(count=50, isPositive=True):
             num_face = int(f.readline()[:-1])
             for i in range(num_face):
                 annot = f.readline().split(" ")
-                face_img = crop(img, float(annot[3]), float(annot[4]), \
+                face_img = crop(img, float(annot[3]), float(annot[4]),
                                 float(annot[0]), float(annot[1]), positive=isPositive)
                 show_img(face_img, positive=isPositive)
             count -= 1
 
 
 if __name__ == '__main__':
-    test()
+    test(isPositive=True)
