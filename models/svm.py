@@ -5,7 +5,7 @@ from data_utils.timer import Timer
 
 
 class SVM:
-    def __init__(self, C=1.0, kernel='rbf', degree=3, gamma='auto_deprecated',
+    def __init__(self, C=1.0, kernel='rbf', degree=3, gamma='scale',
                  coef0=0.0, shrinking=True, probability=True,
                  tol=1e-3, cache_size=200, class_weight=None,
                  verbose=False, max_iter=-1, decision_function_shape='ovr',

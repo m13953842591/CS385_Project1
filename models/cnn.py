@@ -240,5 +240,6 @@ class CNN:
 
 if __name__ == '__main__':
     cnn = CNN()
-    cnn.load_last_checkpoint(os.path.join(WORKSPACE, "checkpoints"))
+    cnn.train()
+    # cnn.load_last_checkpoint(os.path.join(WORKSPACE, "checkpoints"))
     print("acc = ", cnn.score())

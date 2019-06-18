@@ -87,11 +87,9 @@ def detect(input_path, model, hog=True, threshold=0.99, overlap=0.2):
 
 if __name__ == '__main__':
     timer = Timer()
-
-    from models.cnn import CNN
-    from models.cnn import AlexNet
+    from models import *
     model = CNN()
-    model.load_last_checkpoint("checkpoints")
+
     # detect
     with open(os.path.join(DATA_PATH, "FDDB-folds\\FDDB-fold-10.txt"), 'r') as f:
 
